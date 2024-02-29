@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: senha_root_mysql
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: senha_usuario_mysql
+    volumes:
+      - ./volume/db_data:/var/lib/mysql
+    networks:
+      network:
+
+  app:
+    depends_on:
+      - db
+    image: wordpress:latest
+    ports:
+      - "8053:80"  # Você pode alterar a porta do host se desejar
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: senha_usuario_mysql
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - ./volume/wp_data:/var/www/html
+    networks:
+      network:
+      nginx_network:
+        ipv4_address: 10.0.2.53
+
+networks:
+  network:
+  nginx_network:
+    external: true
+
+volumes:
+  db_data: 
+  wp_data:
